@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xianxia/Xuanhuan World Generator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center">Welcome Host, This is a Xianxia/Xuanhuan World Generator System!</h1>
+				<br>
+                <p class="text-center">The System will Create for you your own novel world, main character, sect names and more! Please Feel free to refresh the page or click the Generate Button.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Main Character</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{% autoescape false %}
+							{{ generate_character }}
+						   {% endautoescape %}
+						</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Character">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Plane Name</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ generate_plane_name }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Plane Name">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Cultivation Realm</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ generate_random_cultivation_realm }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Cultivation Realm">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Cultivation Technique</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{% autoescape false %}
+							{{ generate_cultivation_technique }}
+						   {% endautoescape %}
+						</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Cultivation Technique">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Sect Name</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ generate_sect_name }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Sect Name">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Daoist Name</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ generate_random_name }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Daoist Name">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Face Slap</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ generate_face_slap }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Face Slap">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Forbidden Name</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ generate_forbidden_name }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Forbidden Name">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Restaurant Chapter</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ generate_restaurant_chapter }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Restaurant Chapter">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Physique Name</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ generate_physique_name }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Physique Name">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Pill Name</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ generate_pill_name }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Pill Name">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Planet Name</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ generate_planet_name }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Planet Name">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Special Technique</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ generate_special_technique }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Special Technique">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Spirit Herb</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ generate_herb_name }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Spirit Herb">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Generate Beast Name</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ generate_beast_name }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <form action="/" method="POST">
+                            <input type="submit" name="submit" value="Generate Beast Name">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
