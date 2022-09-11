@@ -1,82 +1,196 @@
-"""
-Create a Flask website that has multiple generator sections each section has one "Generate" button and Output zone
-1. Import generate_character() from main_character, Import generate_plane_name() from plane_names, Import generate_random_cultivation_realm() from cultivation_realms, Import generate_cultivation_technique() from cultivation_techniques, Import generate_sect_name() from cultivation_sects, Import generate_random_name() from daoist_titles_names, Import generate_face_slap() from face_slapping, Import generate_forbidden_name() from forbidden_areas_names, Import generate_restaurant_chapter() from chapter_slapping_at_restaurant, Import generate_physique_name() from physique_names, Import generate_pill_name() from pill_names, Import generate_planet_name() from planet_names, Import generate_special_technique() from special_techniques, Import generate_herb_name() from spirit_herbs
-1. Website page should have a "Welcome to Generate you Xianxia/Xuanhuan World" center in a header
-2. Below the header should be a description with a sentence that says "Create you own novel world, main character, sect names and more"
-3. Write the rest of needed code
-"""
+import datetime
+import threading
+import time
+import traceback
+import os
 
-from flask import Flask, render_template, request
-from main_character import generate_character
-from plane_name import generate_plane_name
-from cultivation_realms import generate_random_cultivation_realm
-from cultivation_techniques import generate_cultivation_technique
-from cultivation_sects import generate_sect_name
-from daoist_titles_names import generate_random_name
-from face_slapping import generate_face_slap
-from forbidden_areas_names import generate_forbidden_name
-from chapter_slapping_at_restaurant import generate_restaurant_chapter
-from physique_names import generate_physique_name
-from pill_names import generate_pill_name
-from planet_names import generate_planet_name
-from special_techniques import generate_special_technique
-from spirit_herbs import generate_herb_name
-from beats_names import generate_beast_name
+from flask import Flask, render_template, request, url_for
+import pywhatkit
+from configparser import ConfigParser
+from selenium import webdriver
+from selenium.webdriver import Keys
+from selenium.webdriver.common.by import By
+import database as db
 
 app = Flask(__name__)
+app.debug = True
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'dofusilyas'
+
+db.init_app(app)
+
+config = ConfigParser()
+config.read('config.ini')
+
+# https://vente.tryandjudge.com/dofuskamas.php | Jahash
+url = 'https://vente.tryandjudge.com/dofuskamas.php'
+message = ''
+check_interval = 0
+server_List = []
+whatsapp_number = ''  # '+212675754657' ilyas' whatsapp # '+212709701487' <- my inwi whatsapp
+
+chrome_options = webdriver.ChromeOptions()
+chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-sh-usage")
+chrome_options.add_argument("-no-gpu")
+# chrome_options.add_argument('window-size=1920x1080')
 
 
-@app.route("/", methods=['POST', 'GET'])
-def index():
-    if request.method == 'GET':
-        return render_template("index.html", generate_character=generate_character(),
-                               generate_plane_name=generate_plane_name(),
-                               generate_random_cultivation_realm=generate_random_cultivation_realm(),
-                               generate_cultivation_technique=generate_cultivation_technique(),
-                               generate_sect_name=generate_sect_name(),
-                               generate_random_name=generate_random_name(), generate_face_slap=generate_face_slap(),
-                               generate_forbidden_name=generate_forbidden_name(),
-                               generate_restaurant_chapter=generate_restaurant_chapter(),
-                               generate_physique_name=generate_physique_name(), generate_pill_name=generate_pill_name(),
-                               generate_planet_name=generate_planet_name(),
-                               generate_special_technique=generate_special_technique(),
-                               generate_herb_name=generate_herb_name(), generate_beast_name=generate_beast_name())
-    if request.method == 'POST':
-        # check if
+def every(delay, task):
+    next_time = time.time() + delay
+    while True:
+        time.sleep(max(0, next_time - time.time()))
+        # noinspection PyBroadException
+        try:
+            task()
+        except Exception:
+            traceback.print_exc()
+            break
+            # in production code you might want to have this instead of course:
+            # logger.exception("Problem while executing repetitive task.")
+        # skip tasks if we are behind schedule:
+        next_time += (time.time() - next_time) // delay * delay + delay
 
-        if request.form['submit'] == 'Generate Character':
-            return render_template("index.html", generate_character=generate_character())
-        elif request.form['submit'] == 'Generate Plane Name':
-            return render_template("index.html", generate_plane_name=generate_plane_name())
-        elif request.form['submit'] == 'Generate Cultivation Realm':
-            return render_template("index.html", generate_random_cultivation_realm=generate_random_cultivation_realm())
-        elif request.form['submit'] == 'Generate Cultivation Technique':
-            return render_template("index.html", generate_cultivation_technique=generate_cultivation_technique())
-        elif request.form['submit'] == 'Generate Sect Name':
-            return render_template("index.html", generate_sect_name=generate_sect_name())
-        elif request.form['submit'] == 'Generate Daoist Name':
-            return render_template("index.html", generate_random_name=generate_random_name())
-        elif request.form['submit'] == 'Generate Face Slap':
-            return render_template("index.html", generate_face_slap=generate_face_slap())
-        elif request.form['submit'] == 'Generate Forbidden Name':
-            return render_template("index.html", generate_forbidden_name=generate_forbidden_name())
-        elif request.form['submit'] == 'Generate Restaurant Chapter':
-            return render_template("index.html", generate_restaurant_chapter=generate_restaurant_chapter())
-        elif request.form['submit'] == 'Generate Physique Name':
-            return render_template("index.html", generate_physique_name=generate_physique_name())
-        elif request.form['submit'] == 'Generate Pill Name':
-            return render_template("index.html", generate_pill_name=generate_pill_name())
-        elif request.form['submit'] == 'Generate Planet Name':
-            return render_template("index.html", generate_planet_name=generate_planet_name())
-        elif request.form['submit'] == 'Generate Special Technique':
-            return render_template("index.html", generate_special_technique=generate_special_technique())
-        elif request.form['submit'] == 'Generate Spirit Herb':
-            return render_template("index.html", generate_herb_name=generate_herb_name())
-        elif request.form['submit'] == 'Generate Beast Name':
-            return render_template("index.html", generate_beast_name=generate_beast_name())
+
+def check_server():
+    search_for_server_state(server_name='')
+
+
+def get_sending_time():
+    today = datetime.datetime.now()
+    date_time = today.strftime("%H:%M")
+    h = int(date_time.split(':')[0])
+    m = int(date_time.split(':')[1])
+    return h, m
+
+
+def search_for_server_state(server_name):
+    found = False
+    tries = 3
+    server_found = ''
+    driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=chrome_options)
+    driver.get(url)
+    server_price_list = driver.find_element(By.ID, 'contentprices')
+    rows = server_price_list.find_elements(By.TAG_NAME, 'tr')
+    for row in rows:
+        if tries <= 0:
+            hour, minute = get_sending_time()
+            if 'Cliquez' in server_found:
+                pywhatkit.sendwhatmsg_instantly(whatsapp_number, server_name + message, 5, True, 20)
+                print(f'Whatsapp message sent at {hour}:{minute}, {server_name + message}')
+            driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.CONTROL + 'w')
+            break
+
+        if found is True:
+            tries -= 1
+
+        if server_name in row.text:
+            server_found = row.text
+            tries -= 1
+            found = True
+    driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.CONTROL + 'w')
+
+
+def get_servers():
+    server_found = []
+    skip = 0
+    driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=chrome_options)
+    driver.get(url)
+    server_price_list = driver.find_element(By.ID, 'contentprices')
+    rows = server_price_list.find_elements(By.TAG_NAME, 'td')
+    for row in rows:
+        if skip == 0:
+            server_found.append(row.text)
+            skip = 2
         else:
-            return render_template("index.html")
+            skip -= 1
+
+    driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.CONTROL + 'w')
+    driver.close()
+    driver.quit()
+    return server_found
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+def get_server(sr_name):
+    server_found = {}
+    i = 0
+    driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=chrome_options)
+    driver.get(url)
+    server_price_list = driver.find_element(By.ID, 'contentprices')
+    rows = server_price_list.find_elements(By.TAG_NAME, 'tr')
+    for row in rows:
+        if sr_name in row.text:
+            split = row.find_elements(By.TAG_NAME, 'td')
+            for splits in split:
+                server_found[i] = splits.text
+                i += 1
+
+    driver.find_element(By.TAG_NAME, 'body').send_keys(Keys.CONTROL + 'w')
+    driver.close()
+    driver.quit()
+    return server_found[0], server_found[1], server_found[2]
+
+
+def runConfig():
+    config.add_section('Ilyas Configuration')
+    config.set('Ilyas Configuration', 'Whatsapp_Number', '+212675754657')
+    config.set('Ilyas Configuration', 'Message', ' Server est disponible en option de vente')
+    config.set('Ilyas Configuration', 'Interval', '60')
+
+    with open('config.ini', 'w') as f:
+        config.write(f)
+
+
+def readConfig():
+    global whatsapp_number, message, check_interval
+    whatsapp_number = config.get('Ilyas Configuration', 'Whatsapp_Number')
+    message = config.get('Ilyas Configuration', 'Message')
+    check_interval = config.getint('Ilyas Configuration', 'Interval')
+
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        sname = request.values.get('servers')
+        print('Post Method')
+        print(sname)
+        server_name, price, state = get_server(sname)
+        if not db.get_serverinfo(sname):
+            db.set_serverinfo(server_name, price, state)
+            return render_template('check.html', check=db.get_serverinfo(sname)), {"Refresh": "5, url=/"}
+        else:
+            return render_template('check.html', check=db.get_serverinfo(sname)), {"Refresh": "5, url=/"}
+    elif request.method == 'GET':
+        dbservers = db.Servers.query.all()
+        return render_template('home.html', servers=server_List, dbservers=dbservers)
+    return render_template('home.html')
+
+
+@app.route('/check')
+def check():
+    return render_template('check.html'), {"Refresh": "5; url=/"}
+
+
+@app.route('/add')
+def add():
+    name = request.args.get('name', default='*', type=str)
+    return render_template('add.html', name=name), {"Refresh": "5; url=/"}
+
+
+@app.route('/remove')
+def remove():
+    name = request.args.get('name', default='*', type=str)
+    db.deleteAll()
+    return render_template('remove.html', name=name), {"Refresh": "5; url=/"}
+
+
+if __name__ == '__main__':
+    if config.has_section('Ilyas Configuration') is False:
+        runConfig()
+    readConfig()
+    server_List = get_servers()
+    # threading.Thread(target=lambda: every(check_interval, check_server)).start()
+    app.run()
