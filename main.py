@@ -22,6 +22,7 @@ from planet_names import generate_planet_name
 from special_techniques import generate_special_technique
 from spirit_herbs import generate_herb_name
 from beats_names import generate_beast_name
+from formation_arrays import generate_random_formation_array
 
 app = Flask(__name__)
 
@@ -33,6 +34,7 @@ def index():
                                generate_plane_name=generate_plane_name(),
                                generate_random_cultivation_realm=generate_random_cultivation_realm(),
                                generate_cultivation_technique=generate_cultivation_technique(),
+                               generate_random_formation_array=generate_random_formation_array(),
                                generate_sect_name=generate_sect_name(),
                                generate_random_name=generate_random_name(), generate_face_slap=generate_face_slap(),
                                generate_forbidden_name=generate_forbidden_name(),
@@ -52,6 +54,8 @@ def index():
             return render_template("index.html", generate_random_cultivation_realm=generate_random_cultivation_realm())
         elif request.form['submit'] == 'Generate Cultivation Technique':
             return render_template("index.html", generate_cultivation_technique=generate_cultivation_technique())
+        elif request.form['submit'] == 'Generate Formation Array':
+            return render_template("index.html", generate_random_formation_array=generate_random_formation_array())
         elif request.form['submit'] == 'Generate Sect Name':
             return render_template("index.html", generate_sect_name=generate_sect_name())
         elif request.form['submit'] == 'Generate Daoist Name':
